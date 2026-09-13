@@ -7,12 +7,13 @@ int main() {
     int umnojit = 1;
     int ostat1, ostat2, ostat3, ostat4, ostat5;
 
-    // Ввод чисел чисел от 1 до 5
+    // Ввод чисел чисел от 1 до5
 
     printf("Введите num1:\n "); 
     scanf("%d", &num1);
     sum = sum + num1;
     vichet = vichet - num1;
+    umnojit = umnojit * num1;
     ostat1 = num1 % 10;
 
 
