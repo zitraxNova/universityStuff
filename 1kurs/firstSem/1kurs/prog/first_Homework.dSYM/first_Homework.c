@@ -5,8 +5,7 @@ int main() {
     int sum = 0;
     int vichet = 0;
     int umnojit = 1;
-    int ostat_10 ;
-
+    int ostat1, ostat2, ostat3, ostat4, ostat5;
 
     // Ввод чисел чисел от 1 до 5
 
@@ -14,7 +13,7 @@ int main() {
     scanf("%d", &num1);
     sum = sum + num1;
     vichet = vichet - num1;
-    umnojit = umnojit * num1;
+    ostat1 = num1 % 10;
 
 
     printf("Введите num2:\n "); 
@@ -22,6 +21,7 @@ int main() {
     sum = sum + num2;
     vichet = vichet - num2;
     umnojit = umnojit * num2;
+    ostat2 = num2 % 10;
 
 
     printf("Введите num3:\n "); 
@@ -29,6 +29,7 @@ int main() {
     sum = sum + num3;
     vichet = vichet - num3;
     umnojit = umnojit * num3;
+    ostat3 = num3 % 10;
 
   
     printf("Введите num4:\n "); 
@@ -36,6 +37,7 @@ int main() {
     sum = sum + num4;
     vichet = vichet - num4;
     umnojit = umnojit * num4;
+    ostat4 = num4 % 10;
 
 
     printf("Введите num5:\n "); 
@@ -43,15 +45,10 @@ int main() {
     sum = sum + num5;
     vichet = vichet - num5;
     umnojit = umnojit * num5;
+    ostat5 = num5 % 10;
 
-    if (sum != 0) {
-        ostat_10 =  ostat_10 % 10;
-    }  else {
-        ostat_10 = 0;
-    }
 
   
-
     // сумма всех пяти числе 
    printf("Сумма: %d\n", sum); 
    // разность всех пяти чисел
@@ -59,7 +56,16 @@ int main() {
    // произведение всех пяти чисел
    printf("Произвдени: %d\n", umnojit);
    // Остаток от деления на 10 
-   printf("Остаток деления на 10: %d\n", ostat_10);
+   // 1 числа
+   printf("Остаток деления на 10: %d\n", ostat1);
+   // 2 числа
+   printf("Остаток деления на 10: %d\n", ostat2);
+   // 3 числа
+   printf("Остаток деления на 10: %d\n", ostat3);
+   // 4 числа
+   printf("Остаток деления на 10: %d\n", ostat4);
+   // 5 числа
+   printf("Остаток деления на 10: %d\n", ostat5);
 
 
    printf("Число 1: %d\n", num1);
