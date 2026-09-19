@@ -69,11 +69,11 @@ int main() {
    printf("Остаток деления на 10: %d\n", ostat5);
 
 
-   printf("Число 1: %d\n", num1);
-   printf("Число 2: %d\n", num2);
-   printf("Число 3: %d\n", num3);
-   printf("Число 4: %d\n", num4);
-   printf("Число 5: %d\n", num5);
+   printf("Число 1: %zu байт \n", sizeof(num1));
+   printf("Число 2: %zu байт \n", sizeof(num2));
+   printf("Число 3: %zu байт \n", sizeof(num3));
+   printf("Число 4: %zu байт \n", sizeof(num4));
+   printf("Число 5: %zu байт \n", sizeof(num5));
 
 
     return 0;
