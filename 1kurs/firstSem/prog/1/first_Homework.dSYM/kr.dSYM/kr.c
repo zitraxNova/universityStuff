@@ -1,10 +1,1 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-int main(void) {
-    srand(time(0));        
-    int num = rand() % 10 + 1; 
-    printf("Случайное число: %d\n", num);
-    return 0;
-}
+int roll_dice(int d) { return (d == 6 || d == 10 || d == 20) ? (rand() % d) + 1 : 0; }
