@@ -6,13 +6,18 @@
 #include <termios.h>
 #include <sys/stat.h>
 
-#define USERS_DIR       "users"
-#define SECRET_KEY_FILE "secret.key"
-#define LINE            256
-#define LOGIN           64
-#define PASS            128
+/* ---------- КОНСТАНТЫ ---------- */
+const char *USERS_DIR = "users";
+const char *SECRET_KEY_FILE = "secret.key";
 
-// ввод пароля без echo
+// Использование enum для целых чисел — правильный способ в C для размеров массивов
+enum {
+    LINE  = 256,
+    LOGIN = 64,
+    PASS  = 128
+};
+
+/* ---------- ВВОД ПАРОЛЯ БЕЗ ЭХА ---------- */
 void read_password(const char *prompt, char *buf, int size)
 {
     struct termios oldt, newt;
@@ -32,7 +37,7 @@ void read_password(const char *prompt, char *buf, int size)
     printf("\n");
 }
 
-// хеш пароля 
+/* ---------- ХЕШ ПАРОЛЯ ---------- */
 void hash_password(const char *password, char out[33])
 {
     unsigned long h = 5381;
@@ -42,7 +47,7 @@ void hash_password(const char *password, char out[33])
     sprintf(out, "%016lx", h);
 }
 
-/* ---------- проверка логина ---------- */
+/* ---------- ПРОВЕРКА ЛОГИНА ---------- */
 int valid_login(const char *login)
 {
     int i;
@@ -53,7 +58,7 @@ int valid_login(const char *login)
     return 1;
 }
 
-// путь к файлу user 
+/* ---------- ПУТЬ К ФАЙЛУ ПОЛЬЗОВАТЕЛЯ ---------- */
 void user_path(const char *login, char *out, int size)
 {
     snprintf(out, size, "%s/%s.txt", USERS_DIR, login);
@@ -67,7 +72,7 @@ int user_exists(const char *login)
     return stat(path, &st) == 0;
 }
 
-// new user
+/* ---------- СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ ---------- */
 int create_user(const char *login, const char *password)
 {
     char path[512], hash[33];
@@ -93,7 +98,7 @@ int create_user(const char *login, const char *password)
     return 1;
 }
 
-/* ---------- удаление пользователя ---------- */
+/* ---------- УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ ---------- */
 int delete_user(const char *login)
 {
     char path[512];
@@ -107,7 +112,7 @@ int delete_user(const char *login)
     return 1;
 }
 
-// смена пароля
+/* ---------- СМЕНА ПАРОЛЯ ---------- */
 int change_password(const char *login)
 {
     char path[512], pwd[PASS], pwd2[PASS], hash[33];
@@ -138,15 +143,18 @@ int change_password(const char *login)
     return 1;
 }
 
-// список пользователей 
+/* ---------- СПИСОК ПОЛЬЗОВАТЕЛЕЙ (ИСПРАВЛЕНО) ---------- */
 void list_users(void)
 {
+    char cmd[512];
     printf("Пользователи:\n");
     fflush(stdout);
-    system("ls " USERS_DIR " 2>/dev/null | sed 's/\\.txt$//' | sed 's/^/  - /'");
+    // Формируем безопасную команду с подстановкой переменной USERS_DIR
+    snprintf(cmd, sizeof(cmd), "ls \"%s\" 2>/dev/null | sed 's/\\.txt$//' | sed 's/^/  - /'", USERS_DIR);
+    system(cmd);
 }
 
-// проверка пароля 
+/* ---------- ПРОВЕРКА ПАРОЛЯ ---------- */
 int check_password(const char *login, const char *password)
 {
     char path[512], line[LINE], stored_login[LOGIN], stored_hash[33];
@@ -171,7 +179,7 @@ int check_password(const char *login, const char *password)
     return strcmp(stored_login, login) == 0 && strcmp(stored_hash, hash) == 0;
 }
 
-// rooo-console
+/* ---------- АДМИН-КОНСОЛЬ ---------- */
 void admin_shell(void)
 {
     char line[LINE], pwd[PASS], pwd2[PASS];
@@ -221,7 +229,7 @@ void admin_shell(void)
     printf("=== ВЫХОД ===\n\n");
 }
 
-// создание папок/ключа при первом запуске 
+/* ---------- НАСТРОЙКА (КЛЮЧ И ПАПКА) ---------- */
 void setup(void)
 {
     struct stat st;
@@ -232,14 +240,14 @@ void setup(void)
     if (stat(SECRET_KEY_FILE, &st) != 0) {
         FILE *f = fopen(SECRET_KEY_FILE, "w");
         if (f) {
-            fprintf(f, "secret-key-root");
+            fprintf(f, "secret-key-root"); // Новый ключ
             fclose(f);
             chmod(SECRET_KEY_FILE, 0600);
         }
     }
 }
 
-// чтение секретного ключа
+/* ---------- ЧТЕНИЕ СЕКРЕТНОГО КЛЮЧА ---------- */
 void get_secret_key(char *buf, int size)
 {
     FILE *f = fopen(SECRET_KEY_FILE, "r");
@@ -250,7 +258,7 @@ void get_secret_key(char *buf, int size)
     fclose(f);
 }
 
-// авторизация
+/* ---------- АВТОРИЗАЦИЯ ---------- */
 int login_flow(char *out_login, int size)
 {
     char login[LOGIN], password[PASS], secret[128];
@@ -284,7 +292,7 @@ int login_flow(char *out_login, int size)
     return 1;
 }
 
-// консоль пользователя
+/* ---------- КОНСОЛЬ ПОЛЬЗОВАТЕЛЯ ---------- */
 void user_session(const char *login)
 {
     char line[LINE];
@@ -303,7 +311,7 @@ void user_session(const char *login)
     }
 }
 
-// main 
+/* ---------- MAIN ---------- */
 int main(void)
 {
     char login[LOGIN];
