@@ -6,7 +6,6 @@
 #include <termios.h>
 #include <sys/stat.h>
 
-/* ---------- КОНСТАНТЫ ---------- */
 const char *USERS_DIR = "users";
 const char *SECRET_KEY_FILE = "secret.key";
 
@@ -17,7 +16,7 @@ enum {
     PASS  = 128
 };
 
-/* ---------- ВВОД ПАРОЛЯ БЕЗ ЭХА ---------- */
+// ввод пароля без echo
 void read_password(const char *prompt, char *buf, int size)
 {
     struct termios oldt, newt;
@@ -37,7 +36,7 @@ void read_password(const char *prompt, char *buf, int size)
     printf("\n");
 }
 
-/* ---------- ХЕШ ПАРОЛЯ ---------- */
+// хэш пароля
 void hash_password(const char *password, char out[33])
 {
     unsigned long h = 5381;
@@ -47,7 +46,7 @@ void hash_password(const char *password, char out[33])
     sprintf(out, "%016lx", h);
 }
 
-/* ---------- ПРОВЕРКА ЛОГИНА ---------- */
+// check login
 int valid_login(const char *login)
 {
     int i;
@@ -58,7 +57,7 @@ int valid_login(const char *login)
     return 1;
 }
 
-/* ---------- ПУТЬ К ФАЙЛУ ПОЛЬЗОВАТЕЛЯ ---------- */
+// путь к файл login
 void user_path(const char *login, char *out, int size)
 {
     snprintf(out, size, "%s/%s.txt", USERS_DIR, login);
@@ -72,17 +71,17 @@ int user_exists(const char *login)
     return stat(path, &st) == 0;
 }
 
-/* ---------- СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ ---------- */
+// create new login
 int create_user(const char *login, const char *password)
 {
     char path[512], hash[33];
 
     if (!valid_login(login)) {
-        printf("[!] Логин: только буквы/цифры/_, начинается с буквы или _.\n");
+        printf("    Логин: только буквы/цифры/_, начинается с буквы или _.\n");
         return 0;
     }
     if (user_exists(login)) {
-        printf("[!] Пользователь '%s' уже есть.\n", login);
+        printf("Пользователь '%s' уже есть.\n", login);
         return 0;
     }
 
@@ -90,20 +89,20 @@ int create_user(const char *login, const char *password)
     user_path(login, path, sizeof(path));
 
     FILE *f = fopen(path, "w");
-    if (!f) { printf("[!] Не могу создать файл.\n"); return 0; }
+    if (!f) { printf("Не могу создать файл(.\n"); return 0; }
     fprintf(f, "%s:%s\n", login, hash);
     fclose(f);
 
-    printf("[+] Пользователь '%s' создан.\n", login);
+    printf("Пользователь '%s' создан.\n", login);
     return 1;
 }
 
-/* ---------- УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ ---------- */
+// delete login
 int delete_user(const char *login)
 {
     char path[512];
     if (!user_exists(login)) {
-        printf("[!] Нет такого пользователя.\n");
+        printf("Нет такого пользователя!\n");
         return 0;
     }
     user_path(login, path, sizeof(path));
@@ -112,7 +111,7 @@ int delete_user(const char *login)
     return 1;
 }
 
-/* ---------- СМЕНА ПАРОЛЯ ---------- */
+// change password
 int change_password(const char *login)
 {
     char path[512], pwd[PASS], pwd2[PASS], hash[33];
@@ -143,7 +142,7 @@ int change_password(const char *login)
     return 1;
 }
 
-/* ---------- СПИСОК ПОЛЬЗОВАТЕЛЕЙ (ИСПРАВЛЕНО) ---------- */
+// list login
 void list_users(void)
 {
     char cmd[512];
@@ -154,7 +153,7 @@ void list_users(void)
     system(cmd);
 }
 
-/* ---------- ПРОВЕРКА ПАРОЛЯ ---------- */
+// check password
 int check_password(const char *login, const char *password)
 {
     char path[512], line[LINE], stored_login[LOGIN], stored_hash[33];
@@ -179,12 +178,12 @@ int check_password(const char *login, const char *password)
     return strcmp(stored_login, login) == 0 && strcmp(stored_hash, hash) == 0;
 }
 
-/* ---------- АДМИН-КОНСОЛЬ ---------- */
+// admin-console
 void admin_shell(void)
 {
     char line[LINE], pwd[PASS], pwd2[PASS];
 
-    printf("\n=== СЕКРЕТНАЯ КОНСОЛЬ ===\n");
+    printf("\n ___СЕКРЕТНАЯ КОНСОЛЬ___\n");
     printf("Команды: add <login>, del <login>, list, passwd <login>, exit\n\n");
 
     while (1) {
@@ -210,26 +209,26 @@ void admin_shell(void)
             if (!arg) { printf("[!] Укажите логин.\n"); continue; }
             read_password("Пароль: ", pwd, sizeof(pwd));
             read_password("Повтор: ", pwd2, sizeof(pwd2));
-            if (strcmp(pwd, pwd2) != 0) { printf("[!] Не совпадают.\n"); continue; }
-            if (strlen(pwd) < 3)       { printf("[!] Короткий пароль.\n"); continue; }
+            if (strcmp(pwd, pwd2) != 0) { printf("Не совпадают!\n"); continue; }
+            if (strlen(pwd) < 3)       { printf("Короткий пароль!\n"); continue; }
             create_user(arg, pwd);
         }
         else if (strcmp(cmd, "del") == 0) {
-            if (!arg) { printf("[!] Укажите логин.\n"); continue; }
+            if (!arg) { printf("Укажите логин!\n"); continue; }
             delete_user(arg);
         }
         else if (strcmp(cmd, "passwd") == 0) {
-            if (!arg) { printf("[!] Укажите логин.\n"); continue; }
+            if (!arg) { printf("Укажите логин!\n"); continue; }
             change_password(arg);
         }
         else {
-            printf("[!] Неизвестная команда: %s\n", cmd);
+            printf("Неизвестная команда?!: %s\n", cmd);
         }
     }
-    printf("=== ВЫХОД ===\n\n");
+    printf("ВЫХОД\n\n");
 }
 
-/* ---------- НАСТРОЙКА (КЛЮЧ И ПАПКА) ---------- */
+// settigns (ключ и папка)
 void setup(void)
 {
     struct stat st;
@@ -247,7 +246,7 @@ void setup(void)
     }
 }
 
-/* ---------- ЧТЕНИЕ СЕКРЕТНОГО КЛЮЧА ---------- */
+// чтение secret-key
 void get_secret_key(char *buf, int size)
 {
     FILE *f = fopen(SECRET_KEY_FILE, "r");
@@ -258,7 +257,7 @@ void get_secret_key(char *buf, int size)
     fclose(f);
 }
 
-/* ---------- АВТОРИЗАЦИЯ ---------- */
+// авторизация
 int login_flow(char *out_login, int size)
 {
     char login[LOGIN], password[PASS], secret[128];
@@ -292,7 +291,7 @@ int login_flow(char *out_login, int size)
     return 1;
 }
 
-/* ---------- КОНСОЛЬ ПОЛЬЗОВАТЕЛЯ ---------- */
+// console defolt user
 void user_session(const char *login)
 {
     char line[LINE];
@@ -311,7 +310,7 @@ void user_session(const char *login)
     }
 }
 
-/* ---------- MAIN ---------- */
+// main
 int main(void)
 {
     char login[LOGIN];
